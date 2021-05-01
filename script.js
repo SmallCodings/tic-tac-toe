@@ -1,7 +1,18 @@
 let gameboard = [];
 
 const symbolModule = (() => {
+    const guiCurrentTurn = document.querySelector("#current-turn");
     let currentTurn = 1;
+
+    function changeTurns() {
+        currentTurn += 1;
+        if(currentTurn % 2 == 1) {
+            guiCurrentTurn.textContent = "Player 1 Turn";
+        }
+        else {
+            guiCurrentTurn.textContent = "Player 2 Turn";
+        }
+    }
 
     function getSymbol(boxNum) {
         if(currentTurn % 2 == 1) {
@@ -12,7 +23,7 @@ const symbolModule = (() => {
             gameboard[boxNum].symbol = player2.symbol;
             gameboard[boxNum].symbol = player2.symbol;
         }
-        currentTurn += 1;
+        changeTurns();
     }
 
     function addSymbol(boxNum) {
@@ -24,9 +35,21 @@ const symbolModule = (() => {
         symbolContainer.appendChild(symbol);
     }
 
+    function restartTurn() {
+        guiCurrentTurn.textContent = "Player 1 Turn";
+        currentTurn = 1;
+    }
+
+    function getCurrentTurn() {
+        let currentTurnCopy = currentTurn;
+        return currentTurnCopy;
+    };
+
     return {
         getSymbol: getSymbol,
-        addSymbol: addSymbol
+        addSymbol: addSymbol,
+        restartTurn: restartTurn,
+        getCurrentTurn: getCurrentTurn
     };
 })();
 
@@ -55,6 +78,47 @@ const boxFactory = (board, boxNum) => {
 function createSymbol(boxNum) {
     symbolModule.getSymbol(boxNum);
     symbolModule.addSymbol(boxNum);
+    checkWinner();
+}
+
+function checkWinner() {
+    if(gameboard[0].symbol == gameboard[1].symbol && gameboard[1].symbol == gameboard[2].symbol) {
+        declareWinner(gameboard[0].symbol);
+    }
+    else if(gameboard[3].symbol == gameboard[4].symbol && gameboard[4].symbol == gameboard[5].symbol) {
+        declareWinner(gameboard[3].symbol);
+    }
+    else if(gameboard[6].symbol == gameboard[7].symbol && gameboard[7].symbol == gameboard[8].symbol) {
+        declareWinner(gameboard[6].symbol);
+    }
+    else if(gameboard[0].symbol == gameboard[3].symbol && gameboard[3].symbol == gameboard[6].symbol) {
+        declareWinner(gameboard[0].symbol);
+    }
+    else if(gameboard[1].symbol == gameboard[4].symbol && gameboard[4].symbol == gameboard[7].symbol) {
+        declareWinner(gameboard[1].symbol);
+    }
+    else if(gameboard[2].symbol == gameboard[5].symbol && gameboard[5].symbol == gameboard[8].symbol) {
+        declareWinner(gameboard[2].symbol);
+    }
+    else if(gameboard[0].symbol == gameboard[4].symbol && gameboard[4].symbol == gameboard[8].symbol) {
+        declareWinner(gameboard[0].symbol);
+    }
+    else if(gameboard[2].symbol == gameboard[4].symbol && gameboard[4].symbol == gameboard[6].symbol) {
+        declareWinner(gameboard[2].symbol);
+    }
+    else if(symbolModule.getCurrentTurn() == 10) {
+        alert("Draw!");
+    }
+}
+
+function declareWinner(symbol) {
+    if(symbol == player1.symbol) {
+        alert("Player 1 Wins!");
+    }
+    else {
+        alert("Player 2 Wins!");
+    }
+
 }
 
 function createPlayers() {
@@ -76,6 +140,35 @@ function createBoard() {
     for(let i = 0; i < 3; i++) {
         gameboard.push(boxFactory(boardbottom, i + 6));
     }
+
+    const restartButton = document.querySelector("#restart-button");
+
+    restartButton.addEventListener("click", () => {
+        restartGame();
+    })
+}
+
+function restartGame() {
+
+    const boardtop = document.querySelector("#game-board-top");
+    const boardmiddle = document.querySelector("#game-board-middle");
+    const boardbottom = document.querySelector("#game-board-bottom");
+
+    while (boardtop.hasChildNodes()) {
+        boardtop.removeChild(boardtop.lastChild);
+    }
+
+    while (boardmiddle.hasChildNodes()) {
+        boardmiddle.removeChild(boardmiddle.lastChild);
+    }
+
+    while (boardbottom.hasChildNodes()) {
+        boardbottom.removeChild(boardbottom.lastChild);
+    }
+
+    symbolModule.restartTurn();
+    gameboard = [];
+    initialize();
 }
 
 function initialize() {

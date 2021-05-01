@@ -29,3 +29,21 @@
 .symbolO {
     color: red;
 }
+
+#gui {
+    float: left;
+    position: fixed;
+    left: 50px;
+    top: 30px;
+}
+
+#current-turn {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+#restart-button {
+    width: 100px;
+    height: 50px;
+    margin-top: 20px;
+}
